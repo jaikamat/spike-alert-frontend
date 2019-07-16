@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { Search } from 'semantic-ui-react';
+import './SearchBar.module.css';
 
 const initialState = { value: '', results: [], isLoading: false };
 
@@ -41,6 +42,7 @@ class SearchBar extends React.Component {
 
         return (
             <Search
+                className={'resultsmod'}
                 input={{ iconPosition: 'left' }}
                 loading={isLoading}
                 results={results}

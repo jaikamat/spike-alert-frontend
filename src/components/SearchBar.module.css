@@ -1,0 +1,4 @@
+:global .resultsmod.ui.search > .results {
+    overflow-y: auto;
+    max-height: 300px;
+}
