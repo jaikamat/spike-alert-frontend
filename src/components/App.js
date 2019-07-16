@@ -90,7 +90,7 @@ class App extends React.Component {
                         )}
                     </Menu.Menu>
                 </Menu>
-                <div style={{ marginTop: 50 }}>
+                <div style={{ paddingTop: 50 }}>
                     <Route exact path="/" component={Home} />
                     <Route path="/search" component={Search} />
                     <Route

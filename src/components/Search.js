@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import axios from 'axios';
 import SearchBar from './SearchBar';
 import CardList from './CardList';
-import { Grid, Container } from 'semantic-ui-react';
+import { Grid, Container, Sticky, Ref, Menu } from 'semantic-ui-react';
 
 class Search extends React.Component {
     state = { cards: [], autocomplete: [] };
+    contextRef = createRef();
 
     onSearchSubmit = async arg => {
         const res = await axios.get('http://localhost:1337/search', {
@@ -36,11 +37,19 @@ class Search extends React.Component {
 
         return (
             <Container>
-                <SearchBar
-                    userSearch={this.onSearchSubmit}
-                    autocomplete={this.state.autocomplete}
-                />
-                {cards}
+                <div ref={this.contextRef}>
+                    <Sticky context={this.contextRef} offset={50}>
+                        <Menu>
+                            <Menu.Item>
+                                <SearchBar
+                                    userSearch={this.onSearchSubmit}
+                                    autocomplete={this.state.autocomplete}
+                                />
+                            </Menu.Item>
+                        </Menu>
+                    </Sticky>
+                    {cards}
+                </div>
             </Container>
         );
     }
