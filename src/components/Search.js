@@ -2,10 +2,13 @@ import React, { createRef } from 'react';
 import axios from 'axios';
 import SearchBar from './SearchBar';
 import CardList from './CardList';
-import { Grid, Container, Sticky, Ref, Menu } from 'semantic-ui-react';
+import SortBy from './SortBy';
+import { Grid, Container, Sticky, Menu, Button } from 'semantic-ui-react';
+import _ from 'lodash';
+import { cardList__marginTop } from './Search.module.css';
 
 class Search extends React.Component {
-    state = { cards: [], autocomplete: [] };
+    state = { cards: [], autocomplete: [], activeSortItem: '' };
     contextRef = createRef();
 
     onSearchSubmit = async arg => {
@@ -15,8 +18,22 @@ class Search extends React.Component {
         this.setState({ cards: res.data });
     };
 
-    componentDidMount() {
-        axios
+    sortCardsPrice = () => {
+        const cards = _.sortBy(this.state.cards, card => {
+            return card.priceHistory[card.priceHistory.length - 1].price1;
+        }).reverse();
+        this.setState({ cards: cards });
+    };
+
+    sortCardsPercent = () => {
+        const cards = _.sortBy(this.state.cards, card => {
+            return card.priceTrends.all_time.price1;
+        }).reverse();
+        this.setState({ cards: cards });
+    };
+
+    async componentDidMount() {
+        await axios
             .get('http://localhost:1337/search/autocomplete')
             .then(res => {
                 this.setState({ autocomplete: res.data });
@@ -29,16 +46,18 @@ class Search extends React.Component {
 
         if (this.state.cards.length > 0) {
             cards = (
-                <Grid stackable={true}>
-                    <CardList cards={this.state.cards} />
-                </Grid>
+                <div className={cardList__marginTop}>
+                    <Grid stackable={true}>
+                        <CardList cards={this.state.cards} />
+                    </Grid>
+                </div>
             );
         }
 
         return (
             <Container>
                 <div ref={this.contextRef}>
-                    <Sticky context={this.contextRef} offset={50}>
+                    <Sticky context={this.contextRef} offset={40}>
                         <Menu>
                             <Menu.Item>
                                 <SearchBar
@@ -46,6 +65,10 @@ class Search extends React.Component {
                                     autocomplete={this.state.autocomplete}
                                 />
                             </Menu.Item>
+                            <SortBy
+                                sortCardsPrice={this.sortCardsPrice}
+                                sortCardsPercent={this.sortCardsPercent}
+                            />
                         </Menu>
                     </Sticky>
                     {cards}

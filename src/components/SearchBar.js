@@ -42,10 +42,9 @@ class SearchBar extends React.Component {
 
         return (
             <Search
-                className="transparent"
+                className="transparent searchmod"
                 size="tiny"
                 placeholder="Search for a card..."
-                className="searchmod"
                 input={{ className: 'transparent', iconPosition: 'left' }}
                 loading={isLoading}
                 results={results}
