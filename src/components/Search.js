@@ -12,10 +12,25 @@ class Search extends React.Component {
     contextRef = createRef();
 
     onSearchSubmit = async arg => {
-        const res = await axios.get('http://localhost:1337/search', {
-            params: { name: arg }
-        });
-        this.setState({ cards: res.data });
+        try {
+            const res = await axios.get('http://localhost:1337/search', {
+                params: { name: arg }
+            });
+
+            // Sort the cards by nonfoil price initially
+            const sortedCards = _.sortBy(res.data, el => {
+                return el.priceHistory[el.priceHistory.length - 1].price1;
+            }).reverse();
+
+            this.setState({ cards: sortedCards, activeSortItem: 'price' });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    handleSort = (el, name) => {
+        if (!this.state.cards.length) return;
+        this.setState({ activeSortItem: name });
     };
 
     sortCardsPrice = () => {
@@ -33,12 +48,12 @@ class Search extends React.Component {
     };
 
     async componentDidMount() {
-        await axios
-            .get('http://localhost:1337/search/autocomplete')
-            .then(res => {
-                this.setState({ autocomplete: res.data });
-            })
-            .catch(err => console.log(err));
+        try {
+            const res = await axios.get('http://localhost:1337/search/autocomplete');
+            this.setState({ autocomplete: res.data });
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     render() {
@@ -66,6 +81,8 @@ class Search extends React.Component {
                                 />
                             </Menu.Item>
                             <SortBy
+                                handleSort={this.handleSort}
+                                activeSortItem={this.state.activeSortItem}
                                 sortCardsPrice={this.sortCardsPrice}
                                 sortCardsPercent={this.sortCardsPercent}
                             />
