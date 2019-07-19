@@ -1,9 +1,9 @@
 import React from 'react';
 import axios from 'axios';
-import { Form, Button, Segment, Container } from 'semantic-ui-react';
+import { Form, Button, Segment, Container, Message } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
 
-const initialState = { email: '', password: '', redirectToHome: false };
+const initialState = { email: '', password: '', redirectToHome: false, loginError: false };
 const storage = window.localStorage;
 
 class Login extends React.Component {
@@ -16,33 +16,41 @@ class Login extends React.Component {
         this.setState({ [name]: value });
     };
 
-    handleSubmit = () => {
-        axios
-            .post(
+    handleSubmit = async () => {
+        try {
+            const res = await axios.post(
                 'http://localhost:1337/auth/login',
                 {
                     username: this.state.email,
                     password: this.state.password
                 },
                 { withCredentials: true }
-            )
-            .then(res => {
-                console.log(res);
-                storage.setItem('username', res.data.email);
-                storage.setItem('userId', res.data._id);
-                this.setState({ redirectToHome: true });
-                this.props.checkAuth();
-            })
-            .catch(err => console.log(err.response.data));
+            );
+
+            storage.setItem('username', res.data.email);
+            storage.setItem('userId', res.data._id);
+            this.setState({ redirectToHome: true });
+            this.props.checkAuth();
+        } catch (error) {
+            this.setState({ loginError: true });
+        }
     };
 
     render() {
-        if (this.state.redirectToHome) {
+        const { loginError, redirectToHome, email, password } = this.state;
+
+        if (redirectToHome) {
             return <Redirect to="/myList" />;
         }
 
         return (
             <Container>
+                {loginError && (
+                    <Message warning>
+                        <Message.Header>Oh no!</Message.Header>
+                        <p>Your email and/or password are incorrect</p>
+                    </Message>
+                )}
                 <Segment>
                     <Form onSubmit={this.handleSubmit}>
                         <Form.Field>
@@ -51,7 +59,7 @@ class Login extends React.Component {
                                 placeholder="Email"
                                 name="email"
                                 onChange={this.handleChange}
-                                value={this.state.email}
+                                value={email}
                             />
                         </Form.Field>
                         <Form.Field>
@@ -61,7 +69,7 @@ class Login extends React.Component {
                                 placeholder="Password"
                                 name="password"
                                 onChange={this.handleChange}
-                                value={this.state.password}
+                                value={password}
                             />
                         </Form.Field>
                         <Button type="submit">Submit</Button>
