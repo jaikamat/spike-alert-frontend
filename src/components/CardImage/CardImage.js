@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import scryfallCodeMap from './scryfallCodeMap';
 import { Image } from 'semantic-ui-react';
+import cardBack from './card_back.jpg';
 
 async function fetchImageUri(cardName, setCode) {
     let sfQuery, scryfallCode, filter;
@@ -30,22 +31,27 @@ async function fetchImageUri(cardName, setCode) {
 class CardImage extends React.Component {
     state = { imageLink: '' };
 
-    componentDidMount() {
+    async componentDidMount() {
         const { cardName, setCode } = this.props;
-
-        fetchImageUri(cardName, setCode)
-            .then(uri => this.setState({ imageLink: uri }))
-            .catch(err => console.log(err));
+        try {
+            const uri = await fetchImageUri(cardName, setCode);
+            this.setState({ imageLink: uri });
+        } catch (error) {
+            this.setState({ imageLink: cardBack });
+        }
     }
 
     // Trigger fetch of new image if component props change
-    componentDidUpdate(prevProps) {
+    async componentDidUpdate(prevProps) {
         const { cardName, setCode } = this.props;
 
-        if (cardName !== prevProps.cardName && setCode !== prevProps.setCode) {
-            fetchImageUri(cardName, setCode)
-                .then(uri => this.setState({ imageLink: uri }))
-                .catch(err => console.log(err));
+        if (cardName !== prevProps.cardName || setCode !== prevProps.setCode) {
+            try {
+                const uri = await fetchImageUri(cardName, setCode);
+                this.setState({ imageLink: uri });
+            } catch (error) {
+                this.setState({ imageLink: cardBack });
+            }
         }
     }
 
