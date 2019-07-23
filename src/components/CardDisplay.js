@@ -34,7 +34,13 @@ class CardDisplay extends React.Component {
 
         // Check to see if the accordion is active, then render the graph
         if (!collapsed) {
-            chart = <PriceGraph id={this.props.id} priceHistory={this.props.priceHistory} isOnlyFoil={this.props.isOnlyFoil} />;
+            chart = (
+                <PriceGraph
+                    id={this.props.id}
+                    priceHistory={this.props.priceHistory}
+                    isOnlyFoil={this.props.isOnlyFoil}
+                />
+            );
         }
 
         return (
