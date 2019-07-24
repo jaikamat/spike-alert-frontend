@@ -50,8 +50,6 @@ class CardList extends React.Component {
 
     render() {
         const cards = this.props.cards.map((item, key) => {
-            const currentPrice = item.priceHistory[item.priceHistory.length - 1];
-
             return (
                 <CardDisplay
                     key={key}
@@ -59,8 +57,8 @@ class CardList extends React.Component {
                     name={item.name}
                     setCode={item.setCode}
                     setName={item.setName}
-                    price1={currentPrice.price1}
-                    price2={currentPrice.price2}
+                    price1={item.currentPrice.price1}
+                    price2={item.currentPrice.price2}
                     priceTrends={item.priceTrends}
                     priceHistory={item.priceHistory}
                     setIcon={item.setIcon}

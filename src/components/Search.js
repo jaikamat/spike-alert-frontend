@@ -18,8 +18,8 @@ class Search extends React.Component {
             });
 
             // Sort the cards by nonfoil price initially
-            const sortedCards = _.sortBy(res.data, el => {
-                return el.priceHistory[el.priceHistory.length - 1].price1;
+            const sortedCards = _.sortBy(res.data, card => {
+                return card.currentPrice.price1;
             }).reverse();
 
             this.setState({ cards: sortedCards, activeSortItem: 'price' });
@@ -35,7 +35,7 @@ class Search extends React.Component {
 
     sortCardsPrice = () => {
         const cards = _.sortBy(this.state.cards, card => {
-            return card.priceHistory[card.priceHistory.length - 1].price1;
+            return card.currentPrice.price1;
         }).reverse();
         this.setState({ cards: cards });
     };
