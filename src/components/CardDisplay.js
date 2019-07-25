@@ -16,17 +16,18 @@ class CardDisplay extends React.Component {
     // This collapses all open accordion components when the user searches
     // while other accordions are open
     componentDidUpdate(prevProps) {
-        if (this.props.id !== prevProps.id && !this.state.collapsed) {
+        if (this.props._id !== prevProps._id && !this.state.collapsed) {
             this.setState({ collapsed: true });
         }
     }
 
     render() {
         const { collapsed } = this.state;
+        const { currentPrice } = this.props;
         let foilPrice, chart;
 
         // If price2 exists in addition to price1, foil printing exists
-        if (this.props.price2) foilPrice = this.props.price2.toFixed(2);
+        if (currentPrice.price2) foilPrice = currentPrice.price2.toFixed(2);
         else foilPrice = null;
 
         // Grabs all-time price data
@@ -36,7 +37,7 @@ class CardDisplay extends React.Component {
         if (!collapsed) {
             chart = (
                 <PriceGraph
-                    id={this.props.id}
+                    id={this.props._id}
                     priceHistory={this.props.priceHistory}
                     isOnlyFoil={this.props.isOnlyFoil}
                 />
@@ -61,7 +62,7 @@ class CardDisplay extends React.Component {
                                 <Grid.Column floated="right">
                                     <Statistic size="tiny" floated="right">
                                         <Statistic.Value>
-                                            ${this.props.price1.toFixed(2)}
+                                            ${currentPrice.price1.toFixed(2)}
                                         </Statistic.Value>
                                         <Statistic.Label>
                                             {changePrice > 0 ? '+' + changePrice : changePrice}%
@@ -93,7 +94,7 @@ class CardDisplay extends React.Component {
                                 <Grid.Column width={11}>
                                     {chart}
                                     <UserListButton
-                                        cardId={this.props.id}
+                                        cardId={this.props._id}
                                         userList={this.props.userList}
                                         addCardToList={this.props.addCardToList}
                                         removeCardFromList={this.props.removeCardFromList}

@@ -3,49 +3,52 @@ import axios from 'axios';
 import CardDisplay from './CardDisplay';
 import { Grid } from 'semantic-ui-react';
 
-function getUserList(userId) {
-    return axios.get(`http://localhost:1337/user/${userId}/list/`, { withCredentials: true });
+async function getUserList(userId) {
+    return await axios.get(`http://localhost:1337/user/${userId}/list/`, { withCredentials: true });
 }
 
 class CardList extends React.Component {
     state = { userList: [] };
 
     // Maintain the user's list for the add/remove button components to track changes
-    componentDidMount() {
+    async componentDidMount() {
         const userId = window.localStorage.getItem('userId');
 
         if (userId) {
-            getUserList(userId)
-                .then(res => this.setState({ userList: res.data.map(el => el._id) }))
-                .catch(err => console.log(err));
+            try {
+                const res = await getUserList(userId);
+                this.setState({ userList: res.data.map(el => el._id) });
+            } catch (error) {
+                console.log(error);
+            }
         }
     }
 
-    addCardToList = (userId, cardId) => {
-        axios
-            .post(
+    addCardToList = async (userId, cardId) => {
+        try {
+            const res = await axios.post(
                 `http://localhost:1337/user/${userId}/list/${cardId}`,
                 {},
                 { withCredentials: true }
-            )
-            .then(res => this.setState({ userList: res.data.map(el => el._id) }))
-            .catch(err => console.log(err));
+            );
+            this.setState({ userList: res.data.map(el => el._id) });
+        } catch (error) {
+            console.log(error);
+        }
     };
 
-    removeCardFromList = (userId, cardId) => {
-        const { updateCardView } = this.props;
-
-        axios
-            .put(
+    removeCardFromList = async (userId, cardId) => {
+        try {
+            const res = await axios.put(
                 `http://localhost:1337/user/${userId}/list/${cardId}`,
                 {},
                 { withCredentials: true }
-            )
-            .then(res => {
-                this.setState({ userList: res.data.map(el => el._id) });
-                if (updateCardView) updateCardView(res.data);
-            })
-            .catch(err => console.log(err));
+            );
+            this.setState({ userList: res.data.map(el => el._id) });
+            this.props.updateCardView(res.data);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     render() {
@@ -53,17 +56,7 @@ class CardList extends React.Component {
             return (
                 <CardDisplay
                     key={key}
-                    id={item._id}
-                    name={item.name}
-                    setCode={item.setCode}
-                    setName={item.setName}
-                    price1={item.currentPrice.price1}
-                    price2={item.currentPrice.price2}
-                    priceTrends={item.priceTrends}
-                    priceHistory={item.priceHistory}
-                    setIcon={item.setIcon}
-                    foilMultiplier={item.foilMultiplier}
-                    isOnlyFoil={item.isOnlyFoil}
+                    {...item}
                     userList={this.state.userList}
                     addCardToList={this.addCardToList}
                     removeCardFromList={this.removeCardFromList}
