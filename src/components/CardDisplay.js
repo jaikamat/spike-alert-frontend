@@ -7,11 +7,7 @@ import { Segment, Grid, Statistic, Accordion } from 'semantic-ui-react';
 class CardDisplay extends React.Component {
     state = { collapsed: true };
 
-    handleClick = (e, el) => {
-        this.setState({
-            collapsed: !this.state.collapsed
-        });
-    };
+    handleClick = (e, el) => this.setState({ collapsed: !this.state.collapsed });
 
     // This collapses all open accordion components when the user searches
     // while other accordions are open
@@ -23,15 +19,14 @@ class CardDisplay extends React.Component {
 
     render() {
         const { collapsed } = this.state;
-        const { currentPrice } = this.props;
-        let foilPrice, chart;
-
-        // If price2 exists in addition to price1, foil printing exists
-        if (currentPrice.price2) foilPrice = currentPrice.price2.toFixed(2);
-        else foilPrice = null;
+        const { currentPrice, isOnlyFoil } = this.props;
+        // Some cards are only foil printings. This checks to make sure.
+        const foilStatus = isOnlyFoil ? 'price2' : 'price1';
+        const foilPrice = currentPrice.price2 ? currentPrice.price2.toFixed(2) : null;
+        let chart;
 
         // Grabs all-time price data
-        const changePrice = this.props.priceTrends.all_time.price1;
+        const changePrice = this.props.priceTrends.all_time[foilStatus];
 
         // Check to see if the accordion is active, then render the graph
         if (!collapsed) {
@@ -62,7 +57,7 @@ class CardDisplay extends React.Component {
                                 <Grid.Column floated="right">
                                     <Statistic size="tiny" floated="right">
                                         <Statistic.Value>
-                                            ${currentPrice.price1.toFixed(2)}
+                                            ${currentPrice[foilStatus].toFixed(2)}
                                         </Statistic.Value>
                                         <Statistic.Label>
                                             {changePrice > 0 ? '+' + changePrice : changePrice}%
