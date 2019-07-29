@@ -5,6 +5,7 @@ import Login from './Login';
 import Signup from './Signup';
 import MyList from './MyList';
 import Logout from './Logout';
+import HighLow from './HighLow';
 import { Route, Link } from 'react-router-dom';
 import { Menu } from 'semantic-ui-react';
 
@@ -44,16 +45,23 @@ class App extends React.Component {
                             as={Link}
                             to="/search"
                             name="Search"
-                            // position="right"
                             onClick={this.handleClick}
                             active={'Search' === activeItem}
                         />
+                        <Menu.Item
+                            as={Link}
+                            to="/highLow"
+                            name="highLow"
+                            onClick={this.handleClick}
+                            active={'highLow' === activeItem}
+                        >
+                            Highs / Lows
+                        </Menu.Item>
                         {userLoggedIn && (
                             <Menu.Item
                                 as={Link}
                                 to="/myList"
                                 name="MyList"
-                                // position="right"
                                 onClick={this.handleClick}
                                 active={'MyList' === activeItem}
                             />
@@ -63,7 +71,6 @@ class App extends React.Component {
                                 as={Link}
                                 to="/login"
                                 name="Login"
-                                // position="right"
                                 onClick={this.handleClick}
                                 active={'Login' === activeItem}
                             />
@@ -73,7 +80,6 @@ class App extends React.Component {
                                 as={Link}
                                 to="/signup"
                                 name="Signup"
-                                // position="right"
                                 onClick={this.handleClick}
                                 active={'Signup' === activeItem}
                             />
@@ -83,7 +89,6 @@ class App extends React.Component {
                                 as={Link}
                                 to="/logout"
                                 name="Logout"
-                                // position="right"
                                 onClick={this.handleClick}
                                 active={'Logout' === activeItem}
                             />
@@ -106,6 +111,7 @@ class App extends React.Component {
                         }}
                     />
                     <Route path="/myList" component={MyList} />
+                    <Route path="/highLow" component={HighLow} />
                     <Route
                         path="/logout"
                         render={props => {
