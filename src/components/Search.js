@@ -11,15 +11,17 @@ class Search extends React.Component {
     state = { cards: [], autocomplete: [], activeSortItem: '' };
     contextRef = createRef();
 
-    onSearchSubmit = async arg => {
+    onSearchSubmit = async term => {
         try {
             const res = await axios.get('http://localhost:1337/search', {
-                params: { name: arg }
+                params: { name: term }
             });
 
             // Sort the cards by nonfoil price initially
             const sortedCards = _.sortBy(res.data, card => {
-                return card.currentPrice.price1;
+                const { price1 } = card.currentPrice;
+                // might be null if no nonfoil print - if so return the foil price
+                return price1 || card.currentPrice.price2;
             }).reverse();
 
             this.setState({ cards: sortedCards, activeSortItem: 'price' });
@@ -35,14 +37,16 @@ class Search extends React.Component {
 
     sortCardsPrice = () => {
         const cards = _.sortBy(this.state.cards, card => {
-            return card.currentPrice.price1;
+            const { price1 } = card.currentPrice;
+            return price1 || card.currentPrice.price2;
         }).reverse();
         this.setState({ cards: cards });
     };
 
     sortCardsPercent = () => {
         const cards = _.sortBy(this.state.cards, card => {
-            return card.priceTrends.all_time.price1;
+            const { price1 } = card.priceTrends.all_time;
+            return price1 || card.priceTrends.all_time.price2;
         }).reverse();
         this.setState({ cards: cards });
     };
